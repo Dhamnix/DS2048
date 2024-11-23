@@ -72,17 +72,10 @@ public class Game2048 {
         score = nextState.score;
         return true;
     }
-
     // افزودن یک خانه جدید به صفحه
     public void addCell(int row, int col, int value) {
         cells.add(new Cell(row, col, value));
     }
-
-    // حذف یک خانه
-    private void removeCell(int row, int col) {
-        cells.removeIf(cell -> cell.row == row && cell.col == col);
-    }
-
     // گرفتن خانه در مختصات مشخص
     private Cell getCell(int row, int col) {
         for (Cell cell : cells) {
