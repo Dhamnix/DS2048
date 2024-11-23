@@ -41,7 +41,7 @@ public class Game2048 {
     }
     private void saveState() {
         if (undoStack.size() == MAX_UNDO_REDO) {
-            undoStack.remove(0); // حذف قدیمی‌ترین وضعیت برای حفظ اندازه پشته
+            undoStack.removeFirst(); // حذف قدیمی‌ترین وضعیت برای حفظ اندازه پشته
         }
         // کپی عمیق از وضعیت فعلی
         undoStack.push(new GameState(cells, score));
@@ -355,7 +355,6 @@ public class Game2048 {
                 isRunning = false;
             }
         }
-
         scanner.close();
     }
 
@@ -376,4 +375,4 @@ public class Game2048 {
         Game2048 game = new Game2048();
         game.startGame();
     }
-    }
+}
