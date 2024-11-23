@@ -41,10 +41,11 @@ public class Game2048 {
     }
     private void saveState() {
         if (undoStack.size() == MAX_UNDO_REDO) {
-            undoStack.remove(0); // حذف قدیمی‌ترین وضعیت
+            undoStack.remove(0); // حذف قدیمی‌ترین وضعیت برای حفظ اندازه پشته
         }
+        // کپی عمیق از وضعیت فعلی
         undoStack.push(new GameState(cells, score));
-        redoStack.clear(); // ریست کردن Redo پس از یک حرکت جدید
+        redoStack.clear(); // ریست کردن پشته Redo
     }
 
     // انجام Undo
@@ -53,7 +54,9 @@ public class Game2048 {
             System.out.println("No more Undo available!");
             return false;
         }
-        redoStack.push(new GameState(cells, score)); // وضعیت فعلی را برای Redo ذخیره کن
+        // ذخیره وضعیت فعلی در پشته Redo
+        redoStack.push(new GameState(cells, score));
+        // بازیابی وضعیت قبلی
         GameState previousState = undoStack.pop();
         cells = previousState.cells;
         score = previousState.score;
@@ -66,7 +69,9 @@ public class Game2048 {
             System.out.println("No more Redo available!");
             return false;
         }
-        undoStack.push(new GameState(cells, score)); // وضعیت فعلی را برای Undo ذخیره کن
+        // ذخیره وضعیت فعلی در پشته Undo
+        undoStack.push(new GameState(cells, score));
+        // بازیابی وضعیت بعدی
         GameState nextState = redoStack.pop();
         cells = nextState.cells;
         score = nextState.score;
@@ -97,6 +102,7 @@ public class Game2048 {
 
     // حرکت به سمت بالا
     public void moveUp() {
+        saveState(); // ذخیره وضعیت قبل از حرکت
         for (int col = 0; col < BOARD_SIZE; col++) {
             for (int row = 1; row < BOARD_SIZE; row++) {
                 Cell cell = getCell(row, col);
@@ -116,6 +122,7 @@ public class Game2048 {
 
     // حرکت به سمت پایین
     public void moveDown() {
+        saveState(); // ذخیره وضعیت قبل از حرکت
         for (int col = 0; col < BOARD_SIZE; col++) {
             for (int row = BOARD_SIZE - 2; row >= 0; row--) {
                 Cell cell = getCell(row, col);
@@ -135,6 +142,7 @@ public class Game2048 {
 
     // حرکت به سمت چپ
     public void moveLeft() {
+        saveState(); // ذخیره وضعیت قبل از حرکت
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 1; col < BOARD_SIZE; col++) {
                 Cell cell = getCell(row, col);
@@ -154,6 +162,7 @@ public class Game2048 {
 
     // حرکت به سمت راست
     public void moveRight() {
+        saveState(); // ذخیره وضعیت قبل از حرکت
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = BOARD_SIZE - 2; col >= 0; col--) {
                 Cell cell = getCell(row, col);
@@ -312,8 +321,6 @@ public class Game2048 {
                 case "undo":
                     if (undo()) {
                         System.out.println("Undo successful.");
-                    } else {
-                        System.out.println("No more undos available.");
                     }
                     display();
                     break;
@@ -321,8 +328,6 @@ public class Game2048 {
                 case "redo":
                     if (redo()) {
                         System.out.println("Redo successful.");
-                    } else {
-                        System.out.println("No more redos available.");
                     }
                     display();
                     break;
