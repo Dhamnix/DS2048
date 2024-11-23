@@ -41,7 +41,7 @@ public class Game2048 {
     }
     private void saveState() {
         if (undoStack.size() == MAX_UNDO_REDO) {
-            undoStack.removeFirst(); // حذف قدیمی‌ترین وضعیت برای حفظ اندازه پشته
+            undoStack.removeFirst(); // حذف قدیمی‌ترین وضعیت برای حفظ اندازه پشته لیترالی خودمم نمیدونم چیجوری ولی خب
         }
         // کپی عمیق از وضعیت فعلی
         undoStack.push(new GameState(cells, score));
