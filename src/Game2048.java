@@ -1,18 +1,17 @@
 import java.util.*;
 public class Game2048 {
     private static final int BOARD_SIZE = 4;
-    private static final int MAX_UNDO_REDO = 5; // حداکثر تعداد Undo/Redo
+    private static final int MAX_UNDO_REDO = 5;
     private LinkedList<Cell> cells; // نگهداری خانه‌های غیرخالی
-    private int score; // امتیاز کل
-    private Stack<GameState> undoStack; // پشته برای Undo
-    private Stack<GameState> redoStack; // پشته برای Redo
+    private int score;
+    private Stack<GameState> undoStack;
+    private Stack<GameState> redoStack;
 
 
-    // کلاس داخلی برای نمایش خانه‌ها
     private static class Cell {
-        int row;    // ردیف
-        int col;    // ستون
-        int value;  // مقدار عددی
+        int row;
+        int col;
+        int value;
 
         Cell(int row, int col, int value) {
             this.row = row;
@@ -35,7 +34,7 @@ public class Game2048 {
 
     public Game2048() {
         cells = new LinkedList<>();
-        score = 0; // مقدار اولیه امتیاز
+        score = 0;
         undoStack = new Stack<>();
         redoStack = new Stack<>();
     }
@@ -45,31 +44,29 @@ public class Game2048 {
         }
         // کپی عمیق از وضعیت فعلی
         undoStack.push(new GameState(cells, score));
-        redoStack.clear(); // ریست کردن پشته Redo
+        redoStack.clear(); // ریست کردن Redo
     }
 
-    // انجام Undo
     public boolean undo() {
         if (undoStack.isEmpty()) {
             System.out.println("No more Undo available!");
             return false;
         }
-        // ذخیره وضعیت فعلی در پشته Redo
+        // ذخیره وضعیت فعلی
         redoStack.push(new GameState(cells, score));
-        // بازیابی وضعیت قبلی
+        // وضعیت قبلی
         GameState previousState = undoStack.pop();
         cells = previousState.cells;
         score = previousState.score;
         return true;
     }
 
-    // انجام Redo
     public boolean redo() {
         if (redoStack.isEmpty()) {
             System.out.println("No more Redo available!");
             return false;
         }
-        // ذخیره وضعیت فعلی در پشته Undo
+        // ذخیره وضعیت فعلی در Undo
         undoStack.push(new GameState(cells, score));
         // بازیابی وضعیت بعدی
         GameState nextState = redoStack.pop();
@@ -77,11 +74,9 @@ public class Game2048 {
         score = nextState.score;
         return true;
     }
-    // افزودن یک خانه جدید به صفحه
     public void addCell(int row, int col, int value) {
         cells.add(new Cell(row, col, value));
     }
-    // گرفتن خانه در مختصات مشخص
     private Cell getCell(int row, int col) {
         for (Cell cell : cells) {
             if (cell.row == row && cell.col == col) {
@@ -91,18 +86,16 @@ public class Game2048 {
         return null; // خانه خالی است
     }
 
-    // ادغام خانه‌ها و به‌روزرسانی امتیاز
     private void mergeCells(Cell source, Cell target) {
         if (source != null && target != null && source.value == target.value) {
-            target.value *= 2; // مقدار دو برابر می‌شود
-            score += target.value; // اضافه کردن به امتیاز کل
-            cells.remove(source); // خانه منبع حذف می‌شود
+            target.value *= 2;
+            score += target.value;
+            cells.remove(source);
         }
     }
 
-    // حرکت به سمت بالا
     public void moveUp() {
-        saveState(); // ذخیره وضعیت قبل از حرکت
+        saveState();
         for (int col = 0; col < BOARD_SIZE; col++) {
             for (int row = 1; row < BOARD_SIZE; row++) {
                 Cell cell = getCell(row, col);
@@ -114,15 +107,14 @@ public class Game2048 {
                     if (newRow > 0) {
                         mergeCells(cell, getCell(newRow - 1, col));
                     }
-                    cell.row = newRow; // موقعیت جدید
+                    cell.row = newRow;
                 }
             }
         }
     }
 
-    // حرکت به سمت پایین
     public void moveDown() {
-        saveState(); // ذخیره وضعیت قبل از حرکت
+        saveState();
         for (int col = 0; col < BOARD_SIZE; col++) {
             for (int row = BOARD_SIZE - 2; row >= 0; row--) {
                 Cell cell = getCell(row, col);
@@ -134,15 +126,14 @@ public class Game2048 {
                     if (newRow < BOARD_SIZE - 1) {
                         mergeCells(cell, getCell(newRow + 1, col));
                     }
-                    cell.row = newRow; // موقعیت جدید
+                    cell.row = newRow;
                 }
             }
         }
     }
 
-    // حرکت به سمت چپ
     public void moveLeft() {
-        saveState(); // ذخیره وضعیت قبل از حرکت
+        saveState();
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 1; col < BOARD_SIZE; col++) {
                 Cell cell = getCell(row, col);
@@ -154,15 +145,14 @@ public class Game2048 {
                     if (newCol > 0) {
                         mergeCells(cell, getCell(row, newCol - 1));
                     }
-                    cell.col = newCol; // موقعیت جدید
+                    cell.col = newCol;
                 }
             }
         }
     }
 
-    // حرکت به سمت راست
     public void moveRight() {
-        saveState(); // ذخیره وضعیت قبل از حرکت
+        saveState();
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = BOARD_SIZE - 2; col >= 0; col--) {
                 Cell cell = getCell(row, col);
@@ -174,32 +164,28 @@ public class Game2048 {
                     if (newCol < BOARD_SIZE - 1) {
                         mergeCells(cell, getCell(row, newCol + 1));
                     }
-                    cell.col = newCol; // موقعیت جدید
+                    cell.col = newCol;
                 }
             }
         }
     }
 
-    // افزودن یک خانه جدید پس از هر حرکت
     public void addNewTail() {
         Random random = new Random();
 
-        // یافتن خانه‌های خالی
         ArrayList<int[]> emptyCells = new ArrayList<>();
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 0; col < BOARD_SIZE; col++) {
-                if (getCell(row, col) == null) { // خانه خالی است
+                if (getCell(row, col) == null) {
                     emptyCells.add(new int[]{row, col});
                 }
             }
         }
 
-        // اگر خانه خالی وجود نداشت، نیازی به افزودن نیست
         if (emptyCells.isEmpty()) {
             return;
         }
-
-        // انتخاب تصادفی یک خانه خالی
+            // سلکت کردن رندوم
         int[] selectedCell = emptyCells.get(random.nextInt(emptyCells.size()));
 
         // انتخاب تصادفی مقدار 2 یا 4
@@ -209,7 +195,6 @@ public class Game2048 {
         addCell(selectedCell[0], selectedCell[1], value);
     }
 
-    // چاپ صفحه و امتیاز
     public void printBoard() {
         int[][] board = new int[BOARD_SIZE][BOARD_SIZE];
         for (Cell cell : cells) {
@@ -230,34 +215,32 @@ public class Game2048 {
     public boolean hasWon() {
         for (Cell cell : cells) {
             if (cell.value == 2048) {
-                return true; // کاربر برنده شده است
+                return true; // برنده شد
             }
         }
         return false; // هنوز به 2048 نرسیده است
     }
 
-    // بررسی وجود حرکات ممکن
     private boolean canMove() {
-        // بررسی خانه‌های خالی
+        // ایا خانه خالی وجود دارد اگه داره ترو ریترن میکنه
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 0; col < BOARD_SIZE; col++) {
                 if (getCell(row, col) == null) {
-                    return true; // حرکت ممکن است
+                    return true;
                 }
             }
         }
 
-        // بررسی امکان ترکیب خانه‌های مجاور
+        // بررسی امکان مرج خانه‌های مجاور
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 0; col < BOARD_SIZE; col++) {
                 Cell current = getCell(row, col);
                 if (current != null) {
-                    // بررسی خانه‌های بالا، پایین، چپ و راست
                     if ((row > 0 && getCell(row - 1, col) != null && getCell(row - 1, col).value == current.value) ||
                             (row < BOARD_SIZE - 1 && getCell(row + 1, col) != null && getCell(row + 1, col).value == current.value) ||
                             (col > 0 && getCell(row, col - 1) != null && getCell(row, col - 1).value == current.value) ||
                             (col < BOARD_SIZE - 1 && getCell(row, col + 1) != null && getCell(row, col + 1).value == current.value)) {
-                        return true; // حرکت ممکن است
+                        return true;
                     }
                 }
             }
@@ -265,9 +248,8 @@ public class Game2048 {
         return false; // هیچ حرکت ممکنی وجود ندارد
     }
 
-    // بررسی وضعیت بازی
     public boolean isGameOver() {
-        return !canMove(); // اگر حرکتی ممکن نیست، بازی تمام شده است
+        return !canMove();
     }
     public void startGame() {
         Scanner scanner = new Scanner(System.in);
@@ -276,7 +258,6 @@ public class Game2048 {
         System.out.println("Welcome to 2048!");
         System.out.println("Enter 'start' to begin the game.");
 
-        // انتظار برای شروع بازی
         while (true) {
             String command = scanner.nextLine().trim();
             if (command.equalsIgnoreCase("start")) {
@@ -288,7 +269,6 @@ public class Game2048 {
             }
         }
 
-        // حلقه اصلی بازی
         while (isRunning) {
             System.out.println("Enter a command (moveUp, moveDown, moveLeft, moveRight, undo, redo, display, quit):");
             String command = scanner.nextLine().trim();
@@ -358,14 +338,12 @@ public class Game2048 {
         scanner.close();
     }
 
-    // مقداردهی اولیه بازی
     private void initializeGame() {
         cells.clear();
         score = 0;
         undoStack.clear();
         redoStack.clear();
 
-        // اضافه کردن دو خانه اولیه
         addNewTail();
         addNewTail();
     }
